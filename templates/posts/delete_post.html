@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4" style="max-width:480px;">
+  <div class="card border-danger shadow-sm">
+    <div class="card-body text-center p-5">
+      <h4 class="card-title text-danger mb-3">Delete Post</h4>
+      <p class="card-text mb-4">
+        Are you sure you want to delete <strong>«{{ post.title }}»</strong>?
+        <br><span class="text-muted small">This action cannot be undone.</span>
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center gap-3">
+          <button type="submit" class="btn btn-danger">Yes, delete</button>
+          <a href="{% url 'my_posts' %}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

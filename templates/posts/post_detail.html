@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ post.title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <article class="card shadow-sm border-0">
+
+            {% if post.image %}
+            <img
+                src="{{ post.image.url }}"
+                class="card-img-top"
+                alt="{{ post.title }}"
+                style="max-height: 500px; object-fit: cover;"
+            >
+            {% endif %}
+
+            <div class="card-body p-4">
+
+                {% if post.category %}
+                <span class="badge text-bg-secondary mb-3">
+                    {{ post.category.name }}
+                </span>
+                {% endif %}
+
+                <h1 class="mb-3">
+                    {{ post.title }}
+                </h1>
+
+                <div class="text-muted mb-4">
+                    {{ post.created_at|date:"d.m.Y H:i" }}
+                </div>
+
+                <div class="fs-5">
+                    {{ post.content|linebreaks }}
+                </div>
+
+            </div>
+
+        </article>
+
+        <div class="mt-4">
+            <a href="{% url 'posts' %}"
+               class="btn btn-outline-secondary">
+                ← Назад к постам
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

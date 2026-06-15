@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">My Posts</h2>
+    <a href="{% url 'create_post' %}" class="btn btn-primary btn-sm">+ New Post</a>
+  </div>
+
+  {% if posts %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Created</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for post in posts %}
+            <tr>
+              <td>
+                <a href="{% url 'post_detail' post.pk %}" class="text-decoration-none fw-semibold">
+                  {{ post.title }}
+                </a>
+              </td>
+              <td>
+                {% if post.category %}
+                  <span class="badge bg-secondary">{{ post.category.name }}</span>
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td class="text-muted small">{{ post.created_at|date:"d M Y" }}</td>
+              <td class="text-end">
+                {# Edit and Delete buttons — Task 3 #}
+                <a href="{% url 'edit_post' post.pk %}" class="btn btn-warning btn-sm me-1">✏️ Edit</a>
+                <a href="{% url 'delete_post' post.pk %}" class="btn btn-danger btn-sm">🗑 Delete</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info">You haven't created any posts yet.</div>
+  {% endif %}
+
+  <a href="{% url 'post_list' %}" class="btn btn-link">← All posts</a>
+</div>
+{% endblock %}

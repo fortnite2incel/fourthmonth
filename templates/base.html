@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Блог{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .post-card {
+            transition: 0.2s;
+        }
+
+        .post-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-light bg-white border-bottom">
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" href="/">
+            MyBlog
+        </a>
+
+        <div class="d-flex gap-2">
+
+            <a href="{% url 'posts' %}" class="btn btn-sm btn-outline-primary">
+                Посты
+            </a>            
+            <a href="{% url 'register' %}" class="btn btn-sm btn-outline-primary">
+                Зарегаться
+            </a>
+
+            <a href="{% url 'post_create' %}" class="btn btn-sm btn-primary">
+                + Создать пост
+            </a>
+
+        </div>
+
+    </div>
+</nav>
+
+    <main class="container py-5">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="border-top bg-white py-3 mt-5">
+        <div class="container text-center text-muted">
+            © 2026 MyBlog
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

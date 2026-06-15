@@ -1,5 +1,6 @@
 from django.contrib import admin
-from posts.models import Post
-# Register your models here.
+
+from posts.models import Category, Post
 
 admin.site.register(Post)
+admin.site.register(Category)
