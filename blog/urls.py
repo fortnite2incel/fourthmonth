@@ -32,7 +32,7 @@ from posts.views import (
     edit_post,
 )
 
-from users.views import register_user
+from users.views import register_user, login_user, logout_user
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -47,6 +47,8 @@ urlpatterns = [
 
     path("post/create/", create_post, name="post_create"),
     path("users/register/", register_user, name="register"),
+    path("users/login/", login_user, name="login"),
+    path("users/logout/", logout_user, name="logout"),
 
     path("my/", MyPostListView.as_view(), name="my_posts"),
     path("<int:pk>/edit/", edit_post, name="edit_post"),

@@ -21,3 +21,7 @@ class UserForm(forms.ModelForm):
             raise forms.ValidationError("Пароли должны совпадать!")
 
         return cleaned_data
+
+class LoginForm(forms.Form):
+    email = forms.EmailField()
+    password = forms.CharField()
