@@ -26,10 +26,10 @@ from posts.views import (
     MyPostListView,
     PostDetailView,
     PostListView,
-    create_category,
-    create_post,
-    delete_post,
-    edit_post,
+    PostDeleteView, 
+    CategoryCreateView,  
+    PostCreateView,  
+    PostUpdateView,  
 )
 
 from users.views import register_user, login_user, logout_user
@@ -39,21 +39,20 @@ urlpatterns = [
     path("", home, name="home"),
     path("about/", about, name="about"),
     path("test/", me, name="test"),
-    path('posts/', PostListView.as_view(), name='posts'), 
+    path("posts/", PostListView.as_view(), name="posts"),
     path('posts/<int:pk>/', PostDetailView.as_view(), name='post_detail'),
 
-    path("create/", create_post, name="create_post"),
-    path("categories/create/", create_category, name="create_category"),
+    path("create/", PostCreateView.as_view(), name="create_post"),
+    path("categories/create/", CategoryCreateView.as_view(), name="create_category"),  
 
-    path("post/create/", create_post, name="post_create"),
+    path("post/create/", PostCreateView.as_view(), name="post_create"),
     path("users/register/", register_user, name="register"),
     path("users/login/", login_user, name="login"),
     path("users/logout/", logout_user, name="logout"),
 
     path("my/", MyPostListView.as_view(), name="my_posts"),
-    path("<int:pk>/edit/", edit_post, name="edit_post"),
-    path("<int:pk>/delete/", delete_post, name="delete_post"),
-
+    path("<int:pk>/edit/", PostUpdateView.as_view(), name="edit_post"),  
+    path("<int:pk>/delete/", PostDeleteView.as_view(), name="delete_post"),
 ]
 
 

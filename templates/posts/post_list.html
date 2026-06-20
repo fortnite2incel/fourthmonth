@@ -1,61 +1,196 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Главная{% endblock %}
 
 {% block content %}
 
-<h1 class="mb-4">Последние публикации</h1>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Последние публикации</h1>
+    
+    <!-- ==================== ФОРМА ПОИСКА ==================== -->
+    <form method="get" class="d-flex" style="max-width: 400px; width: 100%;">
+        <div class="input-group">
+            <input type="text" 
+                   name="q" 
+                   class="form-control" 
+                   placeholder="Поиск по названию..." 
+                   value="{{ request.GET.q|default:'' }}"
+                   aria-label="Поиск">
+            
+            <button class="btn btn-dark" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+            
+            {% if request.GET.q %}
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary" title="Сбросить поиск">
+                <i class="bi bi-x-lg"></i>
+            </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
 
+<!-- ==================== ИНФО О ПОИСКЕ ==================== -->
+{% if request.GET.q %}
+<div class="alert alert-info d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <i class="bi bi-search me-2"></i>
+        Результаты поиска по запросу: 
+        <strong>"{{ request.GET.q }}"</strong>
+        (найдено: {{ posts|length }})
+    </div>
+    <a href="{% url 'home' %}" class="btn btn-sm btn-outline-dark">
+        Сбросить поиск
+    </a>
+</div>
+{% endif %}
+
+<!-- ==================== СПИСОК ПОСТОВ ==================== -->
 <div class="row g-4">
 
     {% for post in posts %}
-    <div class="col-md-6">
+    <div class="col-md-6 col-lg-4">
         <div class="card post-card shadow-sm h-100">
 
+            <!-- Изображение -->
             {% if post.image %}
-            <img
-                src="{{ post.image.url }}"
-                class="card-img-top"
-                alt="{{ post.title }}"
-                style="height: 220px; object-fit: cover;"
-            >
+                <img src="{{ post.image.url }}" 
+                     class="card-img-top" 
+                     alt="{{ post.title }}"
+                     style="height: 200px; object-fit: cover;">
+            {% else %}
+                <img src="{% static 'default.png' %}" 
+                     class="card-img-top" 
+                     alt="{{ post.title }}"
+                     style="height: 200px; object-fit: cover;">
             {% endif %}
 
             <div class="card-body d-flex flex-column">
 
-                <span class="badge text-bg-secondary mb-2 align-self-start">
-                    {{ post.category.name }}
-                </span>
+                <!-- Категория -->
+                {% if post.category %}
+                    <span class="badge text-bg-secondary mb-2 align-self-start">
+                        {{ post.category.name }}
+                    </span>
+                {% endif %}
 
-                <h5 class="card-title">
-                    {{ post.title }}
-                </h5>
+                <!-- Заголовок -->
+                <h5 class="card-title mb-2">{{ post.title }}</h5>
 
+                <!-- Автор -->
+                {% if post.user %}
+                    <p class="text-muted small mb-2">
+                        <i class="bi bi-person-circle me-1"></i> {{ post.user.email }}
+                    </p>
+                {% endif %}
+
+                <!-- Краткое описание -->
                 <p class="card-text text-muted flex-grow-1">
-                    {{ post.content|truncatewords:20 }}
+                    {{ post.content|truncatewords:18 }}
                 </p>
 
-                <a href="{% url 'post_detail' post.id %}"
-                   class="btn btn-dark btn-sm align-self-start">
-                    Читать
-                </a>
+                <!-- Кнопки -->
+                <div class="mt-auto">
+                    <a href="{% url 'post_detail' post.id %}" 
+                       class="btn btn-dark btn-sm">
+                        Читать
+                    </a>
+
+                    {% if request.user == post.user %}
+                        <a href="{% url 'edit_post' post.id %}" 
+                           class="btn btn-outline-dark btn-sm ms-1">
+                            Редактировать
+                        </a>
+                    {% endif %}
+                </div>
 
             </div>
 
-            <div class="card-footer text-muted small">
-                {{ post.created_at|date:"d.m.Y H:i" }}
+            <!-- Футер -->
+            <div class="card-footer text-muted small d-flex justify-content-between">
+                <span>{{ post.created_at|date:"d.m.Y H:i" }}</span>
+                
+                {% if post.rate %}
+                    <span class="text-warning">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= post.rate %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                    </span>
+                {% endif %}
             </div>
 
         </div>
     </div>
     {% empty %}
-    <div class="col-12">
-        <div class="alert alert-secondary">
-            Пока нет публикаций.
+        <div class="col-12">
+            <div class="alert alert-secondary text-center py-4">
+                {% if request.GET.q %}
+                    По запросу «{{ request.GET.q }}» ничего не найдено.
+                {% else %}
+                    Пока нет публикаций.
+                {% endif %}
+            </div>
         </div>
-    </div>
     {% endfor %}
 
 </div>
+<!-- ==================== ПАГИНАЦИЯ ==================== -->
+{% if is_paginated %}
+<div class="mt-5 d-flex flex-column align-items-center">
+    <!-- Информация о странице -->
+    <div class="text-muted small mb-2">
+        Страница <strong>{{ page_obj.number }}</strong> из <strong>{{ page_obj.paginator.num_pages }}</strong>
+        (всего {{ page_obj.paginator.count }} публикаций)
+    </div>
 
+    <nav aria-label="Пагинация публикаций">
+        <ul class="pagination shadow-sm">
+            <!-- Предыдущая -->
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link px-3" 
+                       href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                        <i class="bi bi-chevron-left me-1"></i> Предыдущая
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link px-3"><i class="bi bi-chevron-left me-1"></i> Предыдущая</span>
+                </li>
+            {% endif %}
+
+            <!-- Номера страниц (окно ±2) -->
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link px-3">{{ num }}</span>
+                    </li>
+                {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                    <li class="page-item">
+                        <a class="page-link px-3" 
+                           href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Следующая -->
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link px-3" 
+                       href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.next_page_number }}">
+                        Следующая <i class="bi bi-chevron-right ms-1"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link px-3">Следующая <i class="bi bi-chevron-right ms-1"></i></span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
 {% endblock %}

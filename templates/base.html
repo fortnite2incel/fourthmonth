@@ -63,11 +63,16 @@
             </a>
             
         {% else %}
+            <a href="{% url 'create_category' %}" class="btn btn-sm btn-outline-success">
+                + Добавить категорию
+            </a>
+
+            <a href="{% url 'post_create' %}" class="btn btn-sm btn-primary">
+                + Создать пост
+            </a>
+
             <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger">
                 Выйти
-            </a>
-            <a href="{% url 'post_create' %}" class="btn btn-sm btn-primary">
-            + Создать пост
             </a>
         {% endif %}
 

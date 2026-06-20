@@ -5,53 +5,44 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="row justify-content-center">
     <div class="col-lg-8">
-
         <article class="card shadow-sm border-0">
-
             {% if post.image %}
-            <img
-                src="{{ post.image.url }}"
-                class="card-img-top"
-                alt="{{ post.title }}"
-                style="max-height: 500px; object-fit: cover;"
-            >
+            <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}" style="max-height: 500px; object-fit: cover;">
             {% endif %}
 
             <div class="card-body p-4">
-
                 {% if post.category %}
-                <span class="badge text-bg-secondary mb-3">
-                    {{ post.category.name }}
-                </span>
+                <span class="badge text-bg-secondary mb-3">{{ post.category.name }}</span>
                 {% endif %}
 
-                <h1 class="mb-3">
-                    {{ post.title }}
-                </h1>
+                <h1 class="mb-3">{{ post.title }}</h1>
 
                 <div class="text-muted mb-4">
                     {{ post.created_at|date:"d.m.Y H:i" }}
                 </div>
 
-                <div class="fs-5">
+                <div class="fs-5 mb-4">
                     {{ post.content|linebreaks }}
                 </div>
 
-            </div>
+                <!-- ADD THIS BUTTONS BLOCK HERE -->
+                {% if post.user == request.user %}
+                <div class="d-flex gap-2 pt-3 border-top">
+                    <a href="{% url 'edit_post' post.pk %}" class="btn btn-sm btn-outline-warning">Редактировать</a>
+                    <a href="{% url 'delete_post' post.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                </div>
+                {% endif %}
 
+            </div>
         </article>
 
         <div class="mt-4">
-            <a href="{% url 'posts' %}"
-               class="btn btn-outline-secondary">
+            <a href="{% url 'posts' %}" class="btn btn-outline-secondary">
                 ← Назад к постам
             </a>
         </div>
-
     </div>
 </div>
-
 {% endblock %}
